@@ -1,0 +1,22 @@
+name: DeathPlugin
+version: '${project.version}'
+main: de.neko.deathplugin.DeathPlugin
+api-version: 1.19
+authors: [ neko ]
+website: https://github.com/Meowar1
+commands:
+  deathmoney:
+    usage: /<command>
+    aliases:
+      - vigor
+  deathmoneysend:
+    usage: /<command> [Player] [Amount]
+    aliases:
+      - vigorsend
+  revive:
+    usage: /<command> [Player]
+    permission: deathplugin.revive
+  exchange:
+    usage: /<command> [Material] [Amount]
+  exchangelist:
+    usage: /<command>

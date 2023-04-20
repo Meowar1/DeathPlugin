@@ -1,0 +1,21 @@
+SQL:
+  # SQL-Server-Data
+  # Plugin needs SQL connection to work
+  url: 'jdbc:mysql://localhost:3306/deathplugin'
+  user: "root"
+  password: ''
+Messages:
+  dailyJoin: 'You got 10 Vigor.'
+  vote: 'You got 10 Vigor.'
+  death: 'You have lost all your Vigor.'
+  # What the player will see as ban reason.
+  ban: 'You did not have enough vigor with you.'
+  money: 'You have %money% vigor.'
+  moneySend1: 'You send %player% %money% vigor.'
+  moneySend2: '%player% has send you %money% vigor.'
+Money:
+  # How much money you get/pay for certain events, only integer positive numbers!
+  loseAll: true
+  death: 100
+  dailyJoin: 10
+  vote: 10
