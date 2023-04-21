@@ -46,8 +46,8 @@ public class DeathMoneySendCommand implements CommandExecutor, TabCompleter {
         int amount = 0;
 
         try {
-            amount = Integer.valueOf(args[1]);
-        } catch (Exception e) {
+            amount = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
             sender.sendMessage(Component.text("You must use a positive integer number!").color(NamedTextColor.RED));
             return true;
         }
@@ -60,7 +60,7 @@ public class DeathMoneySendCommand implements CommandExecutor, TabCompleter {
 
         UUID receiver = sqlBridge.getUUID(args[0]);
 
-        if (!(sqlBridge.playerExist(args[0])) || receiver == null) {
+        if (!(sqlBridge.playerExist(args[0])) /*Not really necessary.*/  || receiver == null) {
             sender.sendMessage(Component.text("The player " + args[0] + " could not be found!").color(NamedTextColor.RED));
             return true;
         }
@@ -72,7 +72,7 @@ public class DeathMoneySendCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(newMessage1);
 
         Player player2 = Bukkit.getPlayer(receiver);
-        if (player2 != null)
+        if (player2 != null && player2.isOnline())
             player2.sendMessage(newMessage2);
 
         sqlBridge.setMoney(player.getUniqueId(), sqlBridge.getMoney(player.getUniqueId()) - amount);
@@ -85,7 +85,7 @@ public class DeathMoneySendCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             return null;
         } else if (args.length == 2) {
-            return Collections.singletonList("Amount");
+            return Collections.singletonList("[Amount]");
         } else {
             return Collections.emptyList();
         }

@@ -22,11 +22,13 @@ import java.util.stream.Collectors;
 public class ExchangeCommand implements CommandExecutor, TabCompleter {
 
     private final SQLBridge sqlBridge;
-    private final HashMap<Material, Integer> valueMap;
+    private final HashMap<ItemStack, Integer> valueMap;
+    private final HashMap<String, ItemStack> nameMap;
 
-    public ExchangeCommand(SQLBridge sqlBridge, HashMap<Material, Integer> valueMap) {
+    public ExchangeCommand(SQLBridge sqlBridge, HashMap<ItemStack, Integer> valueMap, HashMap<String, ItemStack> nameMap) {
         this.sqlBridge = sqlBridge;
         this.valueMap = valueMap;
+        this.nameMap = nameMap;
     }
 
     @Override
@@ -43,8 +45,8 @@ public class ExchangeCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         if (args.length == 0) {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
-            if (valueMap.containsKey(itemInHand.getType())) {
-                int vigor = valueMap.get(itemInHand.getType());
+            if (valueMap.containsKey(itemInHand)) {
+                int vigor = valueMap.get(itemInHand);
                 vigor *= itemInHand.getAmount();
                 player.getInventory().setItemInMainHand(new ItemStack(Material.POPPY, 0));
                 sqlBridge.setMoney(player.getUniqueId(), vigor + sqlBridge.getMoney(player.getUniqueId()));
@@ -55,10 +57,10 @@ public class ExchangeCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
         } else if (args.length >= 2) {
-            Material material;
+            ItemStack itemStack;
             int amount;
             try {
-                material = Material.getMaterial(args[0]);
+                itemStack = nameMap.get(args[0]);
             } catch (Exception e) {
                 sender.sendMessage(Component.text("Your item was not found or can't be exchanged!").color(NamedTextColor.RED));
                 return true;
@@ -70,19 +72,20 @@ public class ExchangeCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            if (valueMap.containsKey(material)) {
-                int price = amount * valueMap.get(material);
+            if (valueMap.containsKey(itemStack)) {
+                int price = amount * valueMap.get(itemStack);
                 int credit = sqlBridge.getMoney(player.getUniqueId());
                 if (price > credit) {
-                    sender.sendMessage(Component.text("You can't buy " + amount + " " + material.name() + " for " + price + " vigor! You only own " + credit + " vigor!").color(NamedTextColor.RED));
+                    sender.sendMessage(Component.text("You can't buy " + amount + " " + args[0] + " for " + price + " vigor! You only own " + credit + " vigor!").color(NamedTextColor.RED));
                     return true;
                 }
                 sqlBridge.setMoney(player.getUniqueId(), credit-price);
-                HashMap<Integer, ItemStack> restItems = player.getInventory().addItem(new ItemStack(material, amount));
-                restItems.forEach((i, itemStack) -> {
-                    player.getLocation().getWorld().dropItem(player.getLocation(), itemStack);
+                itemStack.setAmount(amount);
+                HashMap<Integer, ItemStack> restItems = player.getInventory().addItem(itemStack);
+                restItems.forEach((i, restItemStacks) -> {
+                    player.getLocation().getWorld().dropItem(player.getLocation(), restItemStacks);
                 });
-                sender.sendMessage(Component.text("You have exchanged " + amount + " " + material.name() + " for " + price + " vigor.").color(NamedTextColor.WHITE));
+                sender.sendMessage(Component.text("You have exchanged " + amount + " " + args[0] + " for " + price + " vigor.").color(NamedTextColor.WHITE));
             } else {
                 sender.sendMessage(Component.text("Your item was not found or can't be exchanged!").color(NamedTextColor.RED));
             }
@@ -97,8 +100,8 @@ public class ExchangeCommand implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         List<String> list = new ArrayList<>();
         if (args.length == 1) {
-            valueMap.forEach((material, value) -> {
-                list.add(material.name());
+            nameMap.forEach((name, itemStack) -> {
+                list.add(name);
             });
         } else if (args.length == 2) {
             list.add("[Amount]");

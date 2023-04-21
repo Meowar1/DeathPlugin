@@ -34,6 +34,7 @@ public class DeathListener implements Listener {
                 sqlBridge.setMoney(player.getUniqueId(), sqlBridge.getMoney(player.getUniqueId()) - cost);
         } else {
             sqlBridge.banPlayer(player.getUniqueId(), true);
+            player.getInventory().clear();
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tempban " + player.getName() + " 24h " + banMessage);
         }
     }

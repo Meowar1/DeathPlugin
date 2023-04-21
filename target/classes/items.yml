@@ -1,7 +1,0 @@
-# How much the items should bring you. You must specify the material name (F3+H ingame --> minecraft:dirt = 'DIRT'), the upper and lower case can be ignored.
-item1:
-  materialName: DIRT
-  value: 1
-item2:
-  materialName: DIAMOND
-  value: 100

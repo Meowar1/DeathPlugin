@@ -20,3 +20,8 @@ commands:
     usage: /<command> [Material] [Amount]
   exchangelist:
     usage: /<command>
+  addexchangeitem:
+    usage: /<command> [Name] [Value]
+    aliases:
+      - aei
+    permission: deathplugin.addexchangeitem

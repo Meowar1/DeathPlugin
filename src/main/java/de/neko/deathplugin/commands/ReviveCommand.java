@@ -14,9 +14,11 @@ import java.util.UUID;
 public class ReviveCommand implements CommandExecutor {
 
     private final SQLBridge sqlBridge;
+    private final int reviveCost;
 
-    public ReviveCommand(SQLBridge sqlBridge) {
+    public ReviveCommand(SQLBridge sqlBridge, int reviveCost) {
         this.sqlBridge = sqlBridge;
+        this.reviveCost = reviveCost;
     }
 
     @Override
@@ -34,6 +36,11 @@ public class ReviveCommand implements CommandExecutor {
             sender.sendMessage(Component.text("The player " + args[0] + " was not banned for missing vigor! You can't unban him with /revive!").color(NamedTextColor.RED));
             return true;
         }
+        if (sqlBridge.getMoney(uuid) < reviveCost) {
+            sender.sendMessage(Component.text("The player " + args[0] + " does not have enough vigor, he only has " + sqlBridge.getMoney(uuid) + " vigor and would need " + reviveCost + " vigor.").color(NamedTextColor.RED));
+            return true;
+        }
+        sqlBridge.setMoney(uuid, 0);
         sqlBridge.banPlayer(uuid, false);
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "unban " + args[0]);
         sender.sendMessage(Component.text("The player " + args[0] + " can now join again!").color(NamedTextColor.WHITE));
