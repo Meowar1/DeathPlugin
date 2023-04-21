@@ -47,6 +47,8 @@ public class DeathMoneySendCommand implements CommandExecutor, TabCompleter {
 
         try {
             amount = Integer.parseInt(args[1]);
+            if (amount > 0)
+                throw new NumberFormatException();
         } catch (NumberFormatException e) {
             sender.sendMessage(Component.text("You must use a positive integer number!").color(NamedTextColor.RED));
             return true;
